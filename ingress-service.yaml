@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  rules:
+    - host: dreamrealm.com
+      http:
+        paths:
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth
+                port:
+                  number: 8082
+          - path: /api/message
+            pathType: Prefix
+            backend:
+              service:
+                name: messages
+                port:
+                  number: 8080
+          - path: /api/trading
+            pathType: Prefix
+            backend:
+              service:
+                name: trading
+                port:
+                  number: 8083

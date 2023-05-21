@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.network/crookedrealm: "true"
+    io.kompose.service: trading
+  name: trading
+spec:
+  containers:
+    - image: dreamrealm/tradingmicroservice:v1
+      name: dreamrealm-trading
+      ports:
+        - containerPort: 8080
+      resources: {}
+  restartPolicy: OnFailure
+status: {}
