@@ -1,8 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trading-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trading
+  template:
+    metadata:
+      labels:
+        app: trading
+    spec:
+      containers:
+        - name: trading
+          image: dreamrealm/tradingmicroservice:v1
+          imagePullPolicy: Always
+---
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.cmd: Kompose convert -f docker-compose.yml
     kompose.version: 1.26.0 (40646f47)
   creationTimestamp: null
   labels:
@@ -12,7 +31,7 @@ spec:
   ports:
     - name: "8083"
       port: 8083
-      targetPort: 8080
+      targetPort: 8083
   selector:
     io.kompose.service: trading
 status:

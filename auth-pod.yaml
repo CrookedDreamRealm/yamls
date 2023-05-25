@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   annotations:
-    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.cmd: Kompose convert -f docker-compose.yml
     kompose.version: 1.26.0 (40646f47)
   creationTimestamp: null
   labels:
@@ -12,9 +12,10 @@ metadata:
 spec:
   containers:
     - image: dreamrealm/authmicroservice:v1
+      imagePullPolicy: Always
       name: dreamrealm-auth
       ports:
-        - containerPort: 8082
+        - containerPort: 8080
       resources: {}
   restartPolicy: OnFailure
 status: {}
