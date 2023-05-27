@@ -15,7 +15,7 @@ spec:
       imagePullPolicy: Always
       name: dreamrealm-auth
       ports:
-        - containerPort: 8080
+        - containerPort: 8082
       resources: {}
   restartPolicy: OnFailure
 status: {}
