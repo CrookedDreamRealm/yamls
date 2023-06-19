@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqlserver-trading
+  namespace: dreamrealm
+  labels:
+    app: mysqlserver-trading
+    tier: backend
+spec:
+  selector:
+    app: mysqlserver-trading
+  ports:
+    - protocol: TCP
+      name: "3309"
+      port: 3309
+      targetPort: 3309
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqlserver-trading
+  namespace: dreamrealm
+spec:
+  selector:
+    matchLabels:
+      app: mysqlserver-trading
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysqlserver-trading
+        tier: backend
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          ports:
+            - containerPort: 3309
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: example
+            - name: MYSQL_TCP_PORT
+              value: "3309"
+            - name: MYSQL_DATABASE
+              value: trading

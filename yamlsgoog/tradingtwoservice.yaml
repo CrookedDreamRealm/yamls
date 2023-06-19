@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tradingtwo
+  namespace: dreamrealm
+  labels:
+    app: tradingtwo
+    tier: backend
+spec:
+  ports:
+    - port: 8084
+      targetPort: 8084
+  selector:
+    app: tradingtwo
+    tier: backend
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradingtwo
+  namespace: dreamrealm
+spec:
+  selector:
+    matchLabels:
+      app: tradingtwo
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tradingtwo
+        tier: backend
+    spec:
+      containers:
+        - name: tradingtwo
+          image: docker.io/dreamrealm/tradingtwomicroservice:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8084

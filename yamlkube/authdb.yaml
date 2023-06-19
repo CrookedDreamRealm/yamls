@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqlserver-auth
+  namespace: dreamrealm
+  labels:
+    app: mysqlserver-auth
+    tier: backend
+spec:
+  selector:
+    app: mysqlserver-auth
+  ports:
+    - protocol: TCP
+      name: "3308"
+      port: 3308
+      targetPort: 3308
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqlserver-auth
+  namespace: dreamrealm
+spec:
+  selector:
+    matchLabels:
+      app: mysqlserver-auth
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysqlserver-auth
+        tier: backend
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          ports:
+            - containerPort: 3308
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: example
+            - name: MYSQL_TCP_PORT
+              value: "3308"
+            - name: MYSQL_DATABASE
+              value: auth

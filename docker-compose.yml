@@ -1,0 +1,167 @@
+version: '3.8'
+services:
+  gateway:
+    container_name: gateway
+    build:
+      context: micro_messages_main\micro_gateway
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    image: dreamrealm/gateway:v1
+    networks:
+      - crookedrealm
+
+  messages:
+    container_name: dreamrealm-messages
+    build:
+      context: micro_messages_main\micro_messages
+      dockerfile: Dockerfile
+    networks:
+      - crookedrealm
+    restart: on-failure
+    depends_on:
+      - mysqlserver-messages
+    image: dreamrealm/messagemicroservice:v1
+    ports:
+      - 8081:8081
+
+  trading:
+    container_name: dreamrealm-trading
+    build:
+      context: micro_messages_main\micro_trading
+      dockerfile: Dockerfile
+    networks:
+      - crookedrealm
+    restart: on-failure
+    image: dreamrealm/tradingmicroservice:v1
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+      - trade-mongodb
+    ports:
+      - 8083:8083
+
+  tradingtwo:
+    container_name: dreamrealm-tradingtwo
+    build:
+      context: micro_messages_main\micro_readtrading
+      dockerfile: Dockerfile
+    networks:
+      - crookedrealm
+    restart: on-failure
+    image: dreamrealm/tradingtwomicroservice:v1
+    depends_on:
+      - mysqlserver-trading
+    ports:
+      - 8084:8084
+
+  auth:
+    container_name: dreamrealm-auth
+    build:
+      context: micro_messages_main\micro_auth
+      dockerfile: Dockerfile
+    networks:
+      - crookedrealm
+    restart: on-failure
+    depends_on:
+      - mysqlserver-auth
+    image: dreamrealm/authmicroservice:v1
+    ports:
+      - 8082:8082
+
+  mysqlserver-messages:
+    container_name: mysqlserver-messages
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    networks:
+      - crookedrealm
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=dreamrealm
+      - MYSQL_PASSWORD=example
+      - MYSQL_DATABASE=messages
+      - MYSQL_TCP_PORT=3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_config:/etc/mysql/conf.d
+
+  mysqlserver-auth:
+    container_name: mysqlserver-auth
+    image: mysql:8.0
+    ports:
+      - "3308:3308"
+    networks:
+      - crookedrealm
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=dreamrealm
+      - MYSQL_PASSWORD=example
+      - MYSQL_DATABASE=auth
+      - MYSQL_TCP_PORT=3308
+    volumes:
+      - mysql_data_auth:/var/lib/mysql
+      - mysql_config_auth:/etc/mysql/conf.d
+  
+  mysqlserver-trading:
+    container_name: mysqlserver-trading
+    image: mysql:8.0
+    ports:
+      - "3309:3309"
+    networks:
+      - crookedrealm
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=dreamrealm
+      - MYSQL_PASSWORD=example
+      - MYSQL_DATABASE=trading
+      - MYSQL_TCP_PORT=3309
+    volumes:
+      - mysql_data_trading:/var/lib/mysql
+      - mysql_config_trading:/etc/mysql/conf.d
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    networks:
+      - crookedrealm
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABIITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  trade-mongodb:
+    container_name: trade-mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: dreamrealm
+    networks:
+      - crookedrealm
+    volumes:
+      - dreamrealm:/data/db
+
+volumes:
+  mysql_data:
+  mysql_config:
+  mysql_data_auth:
+  mysql_config_auth:
+  mysql_data_trading:
+  mysql_config_trading:
+  dreamrealm:
+networks:
+  crookedrealm:
+    # Use a custom driver
+    driver: bridge

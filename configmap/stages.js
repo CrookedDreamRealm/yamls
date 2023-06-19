@@ -10,8 +10,8 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get('http://localhost:60546/api/message/getAllMessages');
-  check(res, { 'status was 500': (r) => r.status == 500 });
+  const res = http.get('http://localhost:8080/api/readtrading/getAllTrades');
+  check(res, { 'status was 200': (r) => r.status == 200 });
   sleep(1);
 }
 

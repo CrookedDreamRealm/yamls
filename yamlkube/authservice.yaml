@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  namespace: dreamrealm
+  labels:
+    app: auth
+    tier: backend
+spec:
+  ports:
+    - port: 8082
+      targetPort: 8082
+  selector:
+    app: auth
+    tier: backend
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  namespace: dreamrealm
+spec:
+  selector:
+    matchLabels:
+      app: auth
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auth
+        tier: backend
+    spec:
+      containers:
+        - name: auth
+          image: docker.io/dreamrealm/authmicroservice:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m

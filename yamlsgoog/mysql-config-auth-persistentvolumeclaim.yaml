@@ -3,8 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: mysql-config
-  name: mysql-config
+    io.kompose.service: mysql-config-auth
+  name: mysql-config-auth
 spec:
   accessModes:
     - ReadWriteOnce
